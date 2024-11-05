@@ -5,7 +5,7 @@
  */
 
 import { Context, Hono } from 'hono';
-import { basicAuth } from 'hono/basic-auth';
+import { bearerAuth } from 'hono/bearer-auth';
 import { env } from 'hono/adapter';
 import { prettyJSON } from 'hono/pretty-json';
 import { HTTPException } from 'hono/http-exception';
@@ -31,17 +31,16 @@ import { createTranscriptionHandler } from './handlers/createTranscriptionHandle
 import { createTranslationHandler } from './handlers/createTranslationHandler';
 
 type Bindings = {
-  BASIC_AUTH_USERNAME: string;
-  BASIC_AUTH_PASSWORD: string;
+  GATEWAY_AUTH_TOKEN: string;
 };
 
 // Create a new Hono server instance
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.use('*', (c: Context, next) =>
-  basicAuth({
-    username: c.env.BASIC_AUTH_USERNAME,
-    password: c.env.BASIC_AUTH_PASSWORD,
+  bearerAuth({
+    token: c.env.GATEWAY_AUTH_TOKEN,
+    headerName: 'x-buddylabsai-auth-token',
   })(c, next)
 );
 
