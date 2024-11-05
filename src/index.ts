@@ -4,7 +4,9 @@
  * @module index
  */
 
-import { Hono } from 'hono';
+import { Context, Hono } from 'hono';
+import { basicAuth } from 'hono/basic-auth';
+import { env } from 'hono/adapter';
 import { prettyJSON } from 'hono/pretty-json';
 import { HTTPException } from 'hono/http-exception';
 // import { env } from 'hono/adapter' // Have to set this up for multi-environment deployment
@@ -28,8 +30,20 @@ import conf from '../conf.json';
 import { createTranscriptionHandler } from './handlers/createTranscriptionHandler';
 import { createTranslationHandler } from './handlers/createTranslationHandler';
 
+type Bindings = {
+  BASIC_AUTH_USERNAME: string;
+  BASIC_AUTH_PASSWORD: string;
+};
+
 // Create a new Hono server instance
-const app = new Hono();
+const app = new Hono<{ Bindings: Bindings }>();
+
+app.use('*', (c: Context, next) =>
+  basicAuth({
+    username: c.env.BASIC_AUTH_USERNAME,
+    password: c.env.BASIC_AUTH_PASSWORD,
+  })(c, next)
+);
 
 /**
  * Middleware that conditionally applies compression middleware based on the runtime.

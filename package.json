@@ -23,10 +23,10 @@
     "docs"
   ],
   "scripts": {
-    "dev": "wrangler dev src/index.ts",
+    "dev": "cp .env .dev.vars && wrangler dev src/index.ts",
     "dev:node": "tsx src/start-server.ts",
     "dev:workerd": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy --minify src/index.ts",
+    "deploy": "cp .env .dev.vars && wrangler deploy --minify src/index.ts",
     "pretty": "prettier --write \"./**/*.{js,jsx,ts,tsx,json}\"",
     "build": "rollup -c",
     "build-plugins": "tsx plugins/build.ts",
