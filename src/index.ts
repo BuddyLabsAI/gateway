@@ -5,6 +5,8 @@
  */
 
 import { Context, Hono } from 'hono';
+import { bearerAuth } from 'hono/bearer-auth';
+import { env } from 'hono/adapter';
 import { prettyJSON } from 'hono/pretty-json';
 import { HTTPException } from 'hono/http-exception';
 // import { env } from 'hono/adapter' // Have to set this up for multi-environment deployment
@@ -30,8 +32,19 @@ import { createTranslationHandler } from './handlers/createTranslationHandler';
 import { modelsHandler, providersHandler } from './handlers/modelsHandler';
 import { realTimeHandler } from './handlers/realtimeHandler';
 
+type Bindings = {
+  GATEWAY_AUTH_TOKEN: string;
+};
+
 // Create a new Hono server instance
-const app = new Hono();
+const app = new Hono<{ Bindings: Bindings }>();
+
+app.use('*', (c: Context, next) =>
+  bearerAuth({
+    token: c.env.GATEWAY_AUTH_TOKEN,
+    headerName: 'x-buddylabsai-auth-token',
+  })(c, next)
+);
 
 /**
  * Middleware that conditionally applies compression middleware based on the runtime.

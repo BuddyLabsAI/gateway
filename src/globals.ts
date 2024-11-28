@@ -1,6 +1,6 @@
 import { endpointStrings } from './providers/types';
 
-export const POWERED_BY: string = 'portkey';
+export const POWERED_BY: string = 'buddylabsai';
 
 export const HEADER_KEYS: Record<string, string> = {
   MODE: `x-${POWERED_BY}-mode`,
